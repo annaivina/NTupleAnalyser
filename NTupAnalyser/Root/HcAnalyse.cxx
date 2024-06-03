@@ -133,9 +133,6 @@ EL::StatusCode HcAnalyse :: initialize ()
      tree->SetDirectory (output);
 //
      tree->Branch("XsectiontimesBR",   	        &xsectionbr);
-//     tree->Branch("tot_weights", 	        &total_weights);
-//     tree->Branch("analys_weight",           &weight_analyse);
-//     tree->Branch("mass_yy", 	            &mass_yy);
 
 	return StatusCode::SUCCESS;
 }
@@ -189,44 +186,9 @@ EL::StatusCode HcAnalyse :: execute ()
 
     //Jets//Photons//Electrons//Muons
     EL_RETURN_CHECK("execute()",event->retrieve( jets, _reco_jet_collection.c_str() ));//pass the string of your favorite jet container
-    //EL_RETURN_CHECK("execute()",event->retrieve( PFlowjets, "HGamAntiKt4EMPFlowJets_BTagging201903" ));//pass the string of your favorite jet container
     EL_RETURN_CHECK("execute()",event->retrieve( photons, "HGamPhotons" ));
     //--------------------------------------------------------------------------------------------------
 
-	//--------------------------------------------------------------------------------------------------
-	// MAke truth histograms
-//     if(isMC){
-//   //   	TruthHGamEvent info///////////////////////
-  //		const xAOD::EventInfo *HgamTrutheventInfo = 0;
-  //		if (!event->retrieve(HgamTrutheventInfo, "HGamTruthEventInfo").isSuccess()){
-//  		Error("execute()", "Failed to retrieve Hgam event info collection. Exiting.");
-//  		return EL::StatusCode::FAILURE;}
-//      	EL_RETURN_CHECK("execute()",event->retrieve( truphotons, "HGamTruthPhotons" )); if(_istruth)dotruth(truphotons,HgamTrutheventInfo);
-// //
-
-		// if(HgamTrutheventInfo->auxdataConst<char>("isFiducial")<1) {return EL::StatusCode::SUCCESS;};
-//
-// 		float mcweight;
-// 		if(eventInfo->auxdataConst<float>("mcChannelNumber")==100000){mcweight= eventInfo->auxdataConst<float>("mcEventWeights");}else mcweight=1.0;
-//
-// 		HStore()->fillTH1F("N_j",HgamTrutheventInfo->auxdataConst<int>("N_j"),mcweight);
-// 		HStore()->fillTH1F("N_j_ctag25",HgamTrutheventInfo->auxdataConst<int>("N_j_ctag25"),mcweight);
-// 		HStore()->fillTH1F("dR_y_y",HgamTrutheventInfo->auxdataConst<float>("dR_y_y"),mcweight);
-// 		HStore()->fillTH1F("pT_j1",HgamTrutheventInfo->auxdataConst<float>("pT_j1")* HC::invGeV,mcweight);
-// 		HStore()->fillTH1F("pT_j2",HgamTrutheventInfo->auxdataConst<float>("pT_j2")* HC::invGeV,mcweight);
-// 		HStore()->fillTH1F("pT_yy",HgamTrutheventInfo->auxdataConst<float>("pT_yy")* HC::invGeV,mcweight);
-// 		HStore()->fillTH1F("y_yy",HgamTrutheventInfo->auxdataConst<float>("y_yy"),mcweight);
-// 		HStore()->fillTH1F("pT_y1",HgamTrutheventInfo->auxdataConst<float>("pT_y1")* HC::invGeV,mcweight);
-// 		HStore()->fillTH1F("pT_y2",HgamTrutheventInfo->auxdataConst<float>("pT_y2")* HC::invGeV,mcweight);
-
-    //}
-//     --------------------------------------------------------------------------------------------------
-
-	// int isCjet = 0;
-// 	int isCjet30 = 0;
-// 	int isCjet35 = 0;
-// 	int isCjet40 = 0;
-// 	int isCjet50 = 0;
 
     //--------------------------------------------------------------------------------------------------
     //Do the cutflow of the NTuples  (pass the boolean - do_cutflow?)
@@ -239,24 +201,7 @@ EL::StatusCode HcAnalyse :: execute ()
  			Error("execute()", "Failed to retrieve Hgam event info collection. Exiting.");
  			return EL::StatusCode::FAILURE;}
       		EL_RETURN_CHECK("execute()",event->retrieve( truthjets, "HGamAntiKt4TruthWZJets" ));
-
-//
-//       	for(auto truejet: *truthjets){
-//       		    if(truejet->pt()*0.001 <25)continue;
-//       		    if(fabs(truejet->eta())>2.5)continue;
-//
-//       		    //HStore()->fillTH1F("truejets_pt",truejet->pt()*0.001); HStore()->fillTH1F("truejets_eta",truejet->eta()*0.001);
-//       		    //if(truejet->auxdataConst<int>("HadronConeExclTruthLabelID")==4){HStore()->fillTH1F("trueCjets_pt",truejet->pt()*0.001); HStore()->fillTH1F("trueCjets_eta",truejet->eta()*0.001);}
-//
-// 				if(truejet->auxdataConst<int>("HadronConeExclTruthLabelID")==4){
-// 					isCjet++;
-// 					if(truejet->pt()*0.001 >30)isCjet30++;
-// 					if(truejet->pt()*0.001 >35)isCjet35++;
-// 					if(truejet->pt()*0.001 >40)isCjet40++;
-// 					if(truejet->pt()*0.001 >50)isCjet50++;
-// 				}
-//       		}
-      	}
+   	}
 
 		//if(HgameventInfo->auxdataConst<char>("isPassedPreselection")<1) {return EL::StatusCode::SUCCESS;}fillCutFlow(CutEnum(PRESEL));
 		//2. passed selection
@@ -270,206 +215,38 @@ EL::StatusCode HcAnalyse :: execute ()
     WeightsScales(HgameventInfo);
 
 
-  //   auto leading_photon = (*photons)[0];
-//     auto subleading_photon = (*photons)[1];
-//     if(_ispTcut){ //we cut on the pt cut for the photon which is 25 GeV and 22
-//        if((leading_photon->pt() < _phpTcut * HC::GeV ) || (subleading_photon->pt() < _phpTcut * HC::GeV))return EL::StatusCode::SUCCESS;
-//      }
-//      //Cutflow
-//      fillCutFlow(CutEnum(PHPT));
-//
-
-
-//      HStore()->fillTH1F("N_j_all",n_jets,weight_analyse);
-//
-//
-//     //Now try to do the selection with Nj_30
-//     int nj30 = 0;
-//     for(auto recoj: *jets){
-//     	if(recoj->pt() < 30 * HC::GeV )continue;
-//     	nj30++;
-//     }
-//
-//     HStore()->fillTH1F("N_j30",nj30,weight_analyse30);
+     auto leading_photon = (*photons)[0];
+    auto subleading_photon = (*photons)[1];
+    if(_ispTcut){ //we cut on the pt cut for the photon which is 25 GeV and 22
+       if((leading_photon->pt() < _phpTcut * HC::GeV ) || (subleading_photon->pt() < _phpTcut * HC::GeV))return EL::StatusCode::SUCCESS;
+     }
+     //Cutflow
+     fillCutFlow(CutEnum(PHPT));
 
 
 	 //Here is the mass before the jet cut
 	mass_gev = HgameventInfo->auxdataConst<float>("m_yy") * HC::invGeV;
-	//mass_yy_pv = HgameventInfo->auxdataConst<float>("m_yy_hardestVertex") * HC::invGeV;
-	//mass_yy_true = HgameventInfo->auxdataConst<float>("m_yy_truthVertex") * HC::invGeV;
-
-//
-// 	HStore()->fillTH1F("m_yy_nojet",mass_gev,total_weights);
-//     if(mass_gev>130.)return EL::StatusCode::SUCCESS;
-//     if(mass_gev<120.)return EL::StatusCode::SUCCESS;
-//     HStore()->fillTH1F("m_yy_nojet_inside",mass_gev,total_weights);
 
     xsectionbr = HgameventInfo->auxdataConst<float>("crossSectionBRfilterEff");
-
-   // if(HgamTrutheventInfo->auxdataConst<int>("N_j_cjet_had_fid")>0)return EL::StatusCode::SUCCESS;
-
-  //   int ismatched;
-//     if(mass_gev == mass_yy_pv){ismatched = 1;}
-//     else {ismatched = 0;}
-//
-//     HStore()->fillTH1F("NN_vs_PV",ismatched);
-//     HStore()->fillTH1F("m_yy_pv",mass_yy_pv);
-//     HStore()->fillTH1F("m_yy_nn",mass_gev);
-//     HStore()->fillTH1F("m_yy_true",mass_yy_true);
-//
-//
-//     int match_nn_true;
-//     int match_pv_true;
-//
-//     if(mass_gev == mass_yy_true){match_nn_true = 1;}
-//     else {match_nn_true=0;}
-//
-//     if(mass_yy_pv == mass_yy_true){match_pv_true = 1;}
-//     else {match_pv_true=0;}
-
-
-//    HStore()->fillTH1F("NN_vs_TRUE",match_nn_true);
-//    HStore()->fillTH1F("PV_vs_TRUE",match_pv_true);
-
-// 	if(jets->size()>0){
-//     	auto leadjet = (*jets)[0];
-// 		if(fabs(leadjet->eta())<2.5){HStore()->fillTH1F("customlead_jet_pt",leadjet->pt()*0.001);}
-// 	}
-//
-// 	if(PFlowjets->size()>0){
-// 		auto pflowleadjet = (*PFlowjets)[0];
-// 		if(fabs(pflowleadjet->eta())<2.5){HStore()->fillTH1F("pflowlead_jet_pt",pflowleadjet->pt()*0.001);}
-// 	}
-
-    //Cutting on number og jets in the events
-  //   int n_jets = jets->size();
-//     if(n_jets < 1 )return EL::StatusCode::SUCCESS;
-//     fillCutFlow(CutEnum(JET1));
-//     //--------------------------------------------------------------------------------------------------
-
-    //the masses calculated by hand and m_yy form Ntup are identical! -------------------------(checked)
-    //Fill the histo (without and with jvt weight) for the at least 1 jet
-   // HStore()->fillTH1F("m_yy_1j_jvt",mass_gev,weight_analyse);
 
     HStore()->fillTH1F("N_cjets_weighted",HgamTrutheventInfo->auxdataConst<int>("N_j_cjet_had_fid"),HgameventInfo->auxdataConst<float>("weightInitial"));
     HStore()->fillTH1F("N_cjets",HgamTrutheventInfo->auxdataConst<int>("N_j_cjet_had_fid"));
     //--------------------------------------------------------------------------------------------------
 
-//
-//
-//     //Cehcing form the Ntuple the m_yy full with weights
-//     if(HgameventInfo->auxdataConst<int>("Hc_Atleast1jisloose")==0){
-//         HStore()->fillTH1F("m_yy_full_nonctag",mass_gev,weight_analyse_jvt_ctagnom);
-// //        HStore()->fillTH1F("m_yy_full_nonctag_jvt",mass_gev,weight_analyse_jvt);
-// //	    HStore()->fillTH1F("m_yy_full_nonctag_light",mass_gev,weight_analyse_jvt_light);
-//
-//
-//      	if(HgamTrutheventInfo->auxdataConst<int>("N_j_cjet_had_fid")<1){
-//      		HStore()->fillTH1F("m_yy_full_nonctag_bkg",mass_gev,weight_analyse_jvt_ctagnom);
-// // 			HStore()->fillTH1F("m_yy_full_nonctag_bkg_jvt",mass_gev,weight_analyse_jvt);
-// // 			HStore()->fillTH1F("m_yy_full_nonctag_bkg_light",mass_gev,weight_analyse_jvt_light);
-//  		}
-// //
-//      	if(HgamTrutheventInfo->auxdataConst<int>("N_j_cjet_had_fid")>0){
-//      		HStore()->fillTH1F("m_yy_full_nonctag_sig",mass_gev,weight_analyse_jvt_ctagnom);
-// // 			HStore()->fillTH1F("m_yy_full_nonctag_sig_jvt",mass_gev,weight_analyse_jvt);
-// // 			HStore()->fillTH1F("m_yy_full_nonctag_sig_light",mass_gev,weight_analyse_jvt_light);
-//      	}
 
+	if(HgameventInfo->auxdataConst<int>("Hcgam_Atleast1jisloose")==1 && HgameventInfo->auxdataConst<int>("Hcgam_CountCtruthFromCharm")==1){
+		 HStore()->fillTH1F("m_yy_ctag_jvt",mass_gev,weight_analyse);
+	}
 
-//      	if(isCjet==1){HStore()->fillTH1F("m_yy_full_nonctag_sig_1j",mass_gev,weight_analyse_jvt_ctagnom);}
-// 		if(isCjet>1){HStore()->fillTH1F("m_yy_full_nonctag_sig_1jplus",mass_gev,weight_analyse_jvt_ctagnom);}
-//
-// 		if(isCjet30>0){HStore()->fillTH1F("m_yy_full_nonctag_sig30",mass_gev,weight_analyse_jvt_ctagnom);}else if(isCjet30<1) {HStore()->fillTH1F("m_yy_full_nonctag_bkg30",mass_gev,weight_analyse_jvt_ctagnom);}
-// 		if(isCjet35>0){HStore()->fillTH1F("m_yy_full_nonctag_sig35",mass_gev,weight_analyse_jvt_ctagnom);}else if(isCjet35<1) {HStore()->fillTH1F("m_yy_full_nonctag_bkg35",mass_gev,weight_analyse_jvt_ctagnom);}
-// 		if(isCjet40>0){HStore()->fillTH1F("m_yy_full_nonctag_sig40",mass_gev,weight_analyse_jvt_ctagnom);}else if(isCjet40<1) {HStore()->fillTH1F("m_yy_full_nonctag_bkg40",mass_gev,weight_analyse_jvt_ctagnom);}
-// 		if(isCjet50>0){HStore()->fillTH1F("m_yy_full_nonctag_sig50",mass_gev,weight_analyse_jvt_ctagnom);}else if(isCjet50<1) {HStore()->fillTH1F("m_yy_full_nonctag_bkg50",mass_gev,weight_analyse_jvt_ctagnom);}
-
- //   }
-
-//
-//      if(HgameventInfo->auxdataConst<int>("Hc_Atleast1jisloose")==1){
-//         HStore()->fillTH1F("m_yy_full_ctag",mass_gev,weight_analyse_jvt_ctagnom);
-// //		HStore()->fillTH1F("m_yy_full_ctag_jvt",mass_gev,weight_analyse_jvt);
-// //		HStore()->fillTH1F("m_yy_full_ctag_light",mass_gev,weight_analyse_jvt_light);
-//
-//  		if(HgamTrutheventInfo->auxdataConst<int>("N_j_cjet_had_fid")<1){
-//  	    	HStore()->fillTH1F("m_yy_full_ctag_bkg",mass_gev,weight_analyse_jvt_ctagnom);
-// // 			HStore()->fillTH1F("m_yy_full_ctag_bkg_jvt",mass_gev,weight_analyse_jvt);
-// // 			HStore()->fillTH1F("m_yy_full_ctag_bkg_light",mass_gev,weight_analyse_jvt_light);
-//      	}
-//      	if(HgamTrutheventInfo->auxdataConst<int>("N_j_cjet_had_fid")>0){
-//      		HStore()->fillTH1F("m_yy_full_ctag_sig",mass_gev,weight_analyse_jvt_ctagnom);
-// // 			HStore()->fillTH1F("m_yy_full_ctag_sig_jvt",mass_gev,weight_analyse_jvt);
-// // 			HStore()->fillTH1F("m_yy_full_ctag_sig_light",mass_gev,weight_analyse_jvt_light);
-//      	}
-
-     // 	if(isCjet==1){HStore()->fillTH1F("m_yy_full_ctag_sig_1j",mass_gev,weight_analyse_jvt_ctagnom);}
-// 		if(isCjet>1){HStore()->fillTH1F("m_yy_full_ctag_sig_1jplus",mass_gev,weight_analyse_jvt_ctagnom);}
-//
-//
-// 		if(isCjet30>0){HStore()->fillTH1F("m_yy_full_ctag_sig30",mass_gev,weight_analyse_jvt_ctagnom);}else if(isCjet30<1) {HStore()->fillTH1F("m_yy_full_ctag_bkg30",mass_gev,weight_analyse_jvt_ctagnom);}
-// 		if(isCjet35>0){HStore()->fillTH1F("m_yy_full_ctag_sig35",mass_gev,weight_analyse_jvt_ctagnom);}else if(isCjet35<1) {HStore()->fillTH1F("m_yy_full_ctag_bkg35",mass_gev,weight_analyse_jvt_ctagnom);}
-// 		if(isCjet40>0){HStore()->fillTH1F("m_yy_full_ctag_sig40",mass_gev,weight_analyse_jvt_ctagnom);}else if(isCjet40<1) {HStore()->fillTH1F("m_yy_full_ctag_bkg40",mass_gev,weight_analyse_jvt_ctagnom);}
-// 		if(isCjet50>0){HStore()->fillTH1F("m_yy_full_ctag_sig50",mass_gev,weight_analyse_jvt_ctagnom);}else if(isCjet50<1) {HStore()->fillTH1F("m_yy_full_ctag_bkg50",mass_gev,weight_analyse_jvt_ctagnom);}
-
-//   }
-
-
-
-	// int ismatched_nonctag;
-// 	int ismatched_ctagged;
-//
-// 	int ismatched_nonctag_nn_true;
-// 	int ismatched_ctagged_nn_true;
-//
-// 	int ismatched_nonctag_pv_true;
-// 	int ismatched_ctagged_pv_true;
-//
-// 	if(HgameventInfo->auxdataConst<int>("Hc_Atleast1jisloose")==0){
-// 		if((mass_gev == mass_yy_pv) ) {ismatched_nonctag = 1;}
-// 		else {ismatched_nonctag = 0;}
-//
-// 		if((mass_gev == mass_yy_true) ) {ismatched_nonctag_nn_true= 1;}
-// 		else {ismatched_nonctag_nn_true = 0;}
-//
-// 		if((mass_yy_pv == mass_yy_true) ) {ismatched_nonctag_pv_true = 1;}
-// 		else {ismatched_nonctag_pv_true = 0;}
-// 	}
-//
-// 	if(HgameventInfo->auxdataConst<int>("Hc_Atleast1jisloose")==1){
-// 		if((mass_gev == mass_yy_pv) ) {ismatched_ctagged = 1;}
-// 		else {ismatched_ctagged = 0;}
-//
-// 		if((mass_gev == mass_yy_true) ) {ismatched_ctagged_nn_true= 1;}
-// 		else {ismatched_ctagged_nn_true = 0;}
-//
-// 		if((mass_yy_pv == mass_yy_true) ) {ismatched_ctagged_pv_true = 1;}
-// 		else {ismatched_ctagged_pv_true = 0;}
-// 	}
-//
-// 	HStore()->fillTH1F("NN_vs_PV_ctagged",ismatched_ctagged);
-// 	HStore()->fillTH1F("NN_vs_PV_nonctag",ismatched_nonctag);
-//
-// 	HStore()->fillTH1F("NN_vs_TRUE_ctagged",ismatched_ctagged_nn_true);
-// 	HStore()->fillTH1F("NN_vs_TRUE_nonctag",ismatched_nonctag_nn_true);
-//
-// 	HStore()->fillTH1F("PV_vs_TRUE_ctagged",ismatched_ctagged_pv_true);
-// 	HStore()->fillTH1F("PV_vs_TRUE_nonctag",ismatched_nonctag_pv_true);
-
-// 	if(HgameventInfo->auxdataConst<int>("Hcgam_Atleast1jisloose")==1 && HgameventInfo->auxdataConst<int>("Hcgam_CountCtruthFromCharm")==1){
-// 		 HStore()->fillTH1F("m_yy_ctag_jvt",mass_gev,weight_analyse);
-// 	}
-//
-// 	if(HgameventInfo->auxdataConst<int>("Hcgam_Atleast1jisloose")==0 && HgameventInfo->auxdataConst<int>("Hcgam_CountCtruthFromCharm")==1){
-// 		 HStore()->fillTH1F("m_yy_nonctag_jvt",mass_gev,weight_analyse);
-// 	}
-    //Check the jsets with different pT and /or check the optimization
-//    checkJets(HgameventInfo, jets, photons, weight_analyse_jvt, weight_analyse_jvt_ctagnom, weight_analyse_jvt_light);
+	if(HgameventInfo->auxdataConst<int>("Hcgam_Atleast1jisloose")==0 && HgameventInfo->auxdataConst<int>("Hcgam_CountCtruthFromCharm")==1){
+		 HStore()->fillTH1F("m_yy_nonctag_jvt",mass_gev,weight_analyse);
+	}
+    Check the jsets with different pT and /or check the optimization
+   checkJets(HgameventInfo, jets, photons, weight_analyse_jvt, weight_analyse_jvt_ctagnom, weight_analyse_jvt_light);
 
 
     //Checking he distributions of photons
-    //if(_isreco)doreco(photons,jets);
+    if(_isreco)doreco(photons,jets);
 
 
      tree->Fill();
@@ -530,11 +307,6 @@ void HcAnalyse::WeightsScales(const xAOD::EventInfo* HgameventInfo)
     initial_weight = HgameventInfo->auxdataConst<float>("weightInitial");
 
     float final_weight  = HgameventInfo->auxdataConst<float>("weight");
-     //float jvt25 = HgameventInfo->auxdataConst<float>("weightJvt");//weight for the jets above 25 GeV
-    // float jvt30 = HgameventInfo->auxdataConst<float>("weightJvt_30");//weight for the jets above 25 GeV
-    //float jvt50 = HgameventInfo->auxdataConst<float>("weightJvt_50");//weight for the jets above 25 GeV
-    //float ctagSF    = HgameventInfo->auxdataConst<float>("Hc_weight_ctag_e");//weight for the jets above 25 GeV
-    //float nonctagSF = HgameventInfo->auxdataConst<float>("Hc_weight_nonctag_e");//weight for the jets above 25 GeV
 
     //weight_sf - already includes the weights from Reco*Trig for muons--------------------(checked)
     float weight_sf = HgameventInfo->auxdataConst<float>("weightSF");
@@ -1802,24 +1574,7 @@ EL::StatusCode HcAnalyse::createHistos()
 
 		}
 
-/*
-		//efficiencies 2d
-		j_ctrue = new TH2D("j_ctrue","j_ctrue",100,-5.,5.,100,0.,1.);
-		j_btrue = new TH2D("j_btrue","j_btrue",100,-5.,5.,100,0.,1.);
-		j_ltrue = new TH2D("j_ltrue","j_ltrue",100,-5.,5.,100,0.,1.);
 
-		c_ctrue = new TH2D("c_ctrue","c_ctrue",100,-5.,5.,100,0.,1.);
-		c_btrue = new TH2D("c_btrue","c_btrue",100,-5.,5.,100,0.,1.);
-		c_ltrue = new TH2D("c_ltrue","c_ltrue",100,-5.,5.,100,0.,1.);
-
-		wk()->addOutput(j_ctrue);
-		wk()->addOutput(j_btrue);
-		wk()->addOutput(j_ltrue);
-
-		wk()->addOutput(c_ctrue);
-		wk()->addOutput(c_btrue);
-		wk()->addOutput(c_ltrue);
-*/
  	}//do the optimization
 
 
@@ -2005,200 +1760,11 @@ EL::StatusCode HcAnalyse :: dotruth(const xAOD::TruthParticleContainer *truphoto
 return EL::StatusCode::SUCCESS;
 }
 
-//double HcAnalyse::DeltaR(double phi1, double eta1, double phi2, double eta2)
-//{
-//  double deta=eta1-eta2;
-//  double dphi=phi1-phi2;
-//  while (dphi < -TMath::Pi() ) dphi += 2*TMath::Pi();
-//  while (dphi >  TMath::Pi() ) dphi -= 2*TMath::Pi();
-//  return std::sqrt(deta*deta+dphi*dphi);
-//}
-
-
-//if you want to use not the leading jet
-//unsigned int thisjet=0;
-//				for(;thisjet<jets->size();++thisjet)
-//				{
-//					if( ((*jets)[thisjet]->pt()*GeV > 25)  && ( fabs( (*jets)[thisjet]->eta() )<2.5 ) ) break;
-//				}
-//				auto leadjet = (*jets)[thisjet];
-//
-
-
-
-//Here lies the code for the truth tagging which is now irrelevant - RIP
-/*
-	//define the variables -----------------------------------------//
-		int countcjets_b60 = 0;
-		float epsilon_b = 0.0, epsilon_c = 0.0, epsilon_l = 0.0;
-
-        if(isMC){
-			// ------ doing the c tagging for the jets using the selected points dl1=0.39 and frac 0.22 ---- ////
-			std::cout << "-------------------------------------------------------" << std::endl;
-			std::cout << " Doing the c tagging using dl = 0.4 and frac = 0.23    " << std::endl;
-			std::cout << "-------------------------------------------------------" << std::endl;
-
-       		//define the variables -----------------------------------------//
-			int countTrueBmatch=0, countTrueCmatch=0, countTrueLmatch=0;
-			int bmistag =0, ctag=0, lmistag =0;
-			//--------------------------------------------------------------//
-
-			//-----------------First lets count number of true c,b, and light jets and count the Number of misidentified-----------------//
-    		for(auto recoj: *jets){
-    			if(fabs(recoj->eta()) > 2.5)continue;//this is after version mistag_v3,v4
-    			if(recoj->pt() < 25 * HC::GeV)continue;//this is after version mistag_v3,v4
-    			bool isCjet = false, isBjet = false, isLjet = false;
-    			//Checking the truth labeling
-    			if(recoj->auxdataConst<int>("HadronConeExclTruthLabelID") == 5){isBjet = true;}
-    			if(recoj->auxdataConst<int>("HadronConeExclTruthLabelID") == 4){isCjet = true;}
-    			if(recoj->auxdataConst<int>("HadronConeExclTruthLabelID") == 0){isLjet = true;}
-    			//setting the booleans
-		    	bool truth_b = false; bool truth_l = false; bool truth_c = false;
-
-				if(isBjet){truth_b = true; countTrueBmatch++;}
-				if(isCjet){truth_c = true; countTrueCmatch++;}
-				if(isLjet){truth_l = true; countTrueLmatch++;}
-
-		    	//DL1
-				double pu_j = recoj->auxdataConst<double>("DL1_pu");
-				double pc_j = recoj->auxdataConst<double>("DL1_pc");
-				double pb_j = recoj->auxdataConst<double>("DL1_pb");
-				//Dl
-				double dl1discriminant = discriminant(pc_j,pb_j,pu_j,0.23);
-				if(truth_b && (dl1discriminant > 0.4)){bmistag++;}
-				if(truth_c && (dl1discriminant > 0.4)){ctag++; }
-				if(truth_l && (dl1discriminant > 0.4)){lmistag++; }
-
-			}//end of reco jet loop
-
-
-			int nj = jets->size();
-			HStore()->fillTH1F("Nj_total",nj);
-			HStore()->fillTH1F("N_trub",countTrueBmatch);
-			HStore()->fillTH1F("N_truc",countTrueCmatch);
-			HStore()->fillTH1F("N_trul",countTrueLmatch);
-
-			HStore()->fillTH1F("N_trub_missc",bmistag);
-			HStore()->fillTH1F("N_truc_missc",ctag);
-			HStore()->fillTH1F("N_trul_missc",lmistag);
-
-
-			//-----------------Second lets make the efficiency for the misidentification-----------------//
-        	//misidentification B
-			if(countTrueBmatch==0) {epsilon_b = 0.0;}
-			else { epsilon_b = (bmistag*1.0)/(1.0*countTrueBmatch);}
-
-			//identification C
-			if(countTrueCmatch ==0) {epsilon_c = 0.0;}
-        	else { epsilon_c = (ctag*1.0)/(1.0*countTrueCmatch); }
-
-	    	//misidentification L
-			if(countTrueLmatch==0) {epsilon_l = 0.0;}
-			else { epsilon_l = (lmistag*1.0)/(1.0*countTrueLmatch); }
-
-			//filling the efficiency histograms
-			if(countTrueBmatch > 0){
-			HStore()->fillTH1F("eff_bmiss",epsilon_b);                      HStore()->fillTH1F("eff_bmissw",epsilon_b,weightjvt);
-			HStore()->fillTH1F("eff_bmiss_nosf",epsilon_b,tot_weight_nosf); HStore()->fillTH1F("eff_bmiss_init",epsilon_b,initial_weight);}
-
-			if(countTrueCmatch > 0){
-			HStore()->fillTH1F("eff_c",epsilon_c);      					HStore()->fillTH1F("eff_cw",epsilon_c,weightjvt);
-			HStore()->fillTH1F("eff_c_nosf",epsilon_c,tot_weight_nosf);  	HStore()->fillTH1F("eff_c_init",epsilon_c,initial_weight);}
-
-
-			if(countTrueLmatch > 0){
-			HStore()->fillTH1F("eff_lmiss",epsilon_l);   					HStore()->fillTH1F("eff_lmissw",epsilon_l,weightjvt);
-			HStore()->fillTH1F("eff_lmiss_nosf",epsilon_l,tot_weight_nosf); HStore()->fillTH1F("eff_lmiss_init",epsilon_l,initial_weight);}
-        }//end of isMC
-
-
-           // bool isCjet_tagged = false, isBjet_tagged = false, isLjet_tagged = false;
-		    //if(leadjet->auxdataConst<int>("HadronConeExclTruthLabelID") == 4) {isCjet_tagged = true;}
-		   // if(leadjet->auxdataConst<int>("HadronConeExclTruthLabelID") == 5) {isBjet_tagged = true;}
-		   // if(leadjet->auxdataConst<int>("HadronConeExclTruthLabelID") == 0) {isLjet_tagged = true;}
-		   // HStore()->fillTH1F("truth_jets_AfterCtag_c",isCjet_tagged);
-		   // HStore()->fillTH1F("truth_jets_AfterCtag_b",isBjet_tagged);
-		   // HStore()->fillTH1F("truth_jets_AfterCtag_l",isLjet_tagged);
-
-
-
-		//  bool isCjet = false, isBjet = false, isLjet = false;;
-		//  if(leadjet->auxdataConst<int>("HadronConeExclTruthLabelID") == 4){ isCjet = true;} HStore()->fillTH1F("truth_tagged_C",isCjet);
-        //  if(leadjet->auxdataConst<int>("HadronConeExclTruthLabelID") == 5){ isBjet = true;} HStore()->fillTH1F("truth_tagged_B",isBjet);
-    	//  if(leadjet->auxdataConst<int>("HadronConeExclTruthLabelID") == 0){ isLjet = true;} HStore()->fillTH1F("truth_tagged_L",isLjet);
-
-
-*/
-
-
-
-//Something suspicious
-/*
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr05_nomhj==true){HStore()->fillTH1F("m_yy_dR05_mjhdefc_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr10_nomhj==true){HStore()->fillTH1F("m_yy_dR1_mjhdefc_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr15_nomhj==true){HStore()->fillTH1F("m_yy_dR15_mjhdefc_jvt",mass_gev,weightjvt20);}
-
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr05_mhj150==true){HStore()->fillTH1F("m_yy_dR05_mjh150c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr05_mhj155==true){HStore()->fillTH1F("m_yy_dR05_mjh155c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr05_mhj160==true){HStore()->fillTH1F("m_yy_dR05_mjh160c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr05_mhj165==true){HStore()->fillTH1F("m_yy_dR05_mjh165c_jvt",mass_gev,weightjvt20);}
-
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr10_mhj150==true){HStore()->fillTH1F("m_yy_dR1_mjh150c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr10_mhj155==true){HStore()->fillTH1F("m_yy_dR1_mjh155c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr10_mhj160==true){HStore()->fillTH1F("m_yy_dR1_mjh160c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr10_mhj165==true){HStore()->fillTH1F("m_yy_dR1_mjh165c_jvt",mass_gev,weightjvt20);}
-
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr15_mhj150==true){HStore()->fillTH1F("m_yy_dR15_mjh150c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr15_mhj155==true){HStore()->fillTH1F("m_yy_dR15_mjh155c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr15_mhj160==true){HStore()->fillTH1F("m_yy_dR15_mjh160c_jvt",mass_gev,weightjvt20);}
-        if(mv2_60==false && dl1_discriminant > 0.4 && dr15_mhj165==true){HStore()->fillTH1F("m_yy_dR15_mjh165c_jvt",mass_gev,weightjvt20);}
-*/
-
-
-
-//other code
-
-
-//
-//
-// 		int n_btagged_jets = 0; // initialize the counter for b-tagged jets
-// 		int n_nonbtagged_jets = 0; // initialize the counter for non-btagged jets
-// 		int jetcount = 0;
-// 		int btagged_jet_flavour = 0;
-// 		int nonbtagged_jet_flavour = 0;
-//
-// 		for(auto recoj: *jets){
-//     		if(fabs(recoj->eta()) > 2.5) continue;
-//     		if(recoj->pt() < 25 * HC::GeV) continue;
-//     		jetcount++;
-//
-//     		if(jetcount>=3)break;
-//
-//     		if(HC::DR(recoj,pho_lead) < _dR_cut || HC::DR(recoj,pho_sublead) < _dR_cut) continue;
-//
-//
-//
-//     		double pu_jr = recoj->auxdataConst<double>("DL1r_pu");
-//     		double pc_jr = recoj->auxdataConst<double>("DL1r_pc");
-//     		double pb_jr = recoj->auxdataConst<double>("DL1r_pb");
-//
-//     		double dl1_discriminant_DL1Ofic = discriminant(pc_jr, pb_jr, pu_jr, 0.2);
-//
-//     		if(dl1_discriminant_DL1Ofic > 1) {
-//         		n_btagged_jets++;
-//         		btagged_jet_flavour = recoj->auxdataConst<int>("HadronConeExclTruthLabelID");
-//         		break;
-//         	}
-//     		else if(dl1_discriminant_DL1Ofic < 1 ) {
-//         		n_nonbtagged_jets++;
-//         		nonbtagged_jet_flavour = recoj->auxdataConst<int>("HadronConeExclTruthLabelID");
-//         		break;
-//     		}
-//
-//         }
-//
-//     	if(n_btagged_jets > 0 ) { HStore()->fillTH1F("m_yy_ofic_jvt_ctag",mass_gev,weightjvt_ctag); HStore()->fillTH1F("TruthLabel_CtagTight_j25", btagged_jet_flavour);}
-//     	else if(n_nonbtagged_jets>0) {HStore()->fillTH1F("m_yy_NOofic_jvt_ctag",mass_gev,weightjvt_ctag); HStore()->fillTH1F("TruthLabel_NonCtagTight_j25", nonbtagged_jet_flavour); }
-//
-//     	HStore()->fillTH1F("N_NoNctagged",n_nonbtagged_jets);
-//     	HStore()->fillTH1F("N_Ctagged",n_btagged_jets);
+double HcAnalyse::DeltaR(double phi1, double eta1, double phi2, double eta2)
+{
+ double deta=eta1-eta2;
+ double dphi=phi1-phi2;
+ while (dphi < -TMath::Pi() ) dphi += 2*TMath::Pi();
+ while (dphi >  TMath::Pi() ) dphi -= 2*TMath::Pi();
+ return std::sqrt(deta*deta+dphi*dphi);
+}
